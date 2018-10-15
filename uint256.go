@@ -2,7 +2,6 @@ package uint256
 
 import (
 	"log"
-	"reflect"
 
 	"github.com/kg6zvp/go-intdian"
 )
@@ -23,13 +22,20 @@ type Uint256 [LENGTH]uint64
 //     b: Uint256 to compare against
 // returns: bool
 func (a *Uint256) Equal(b Uint256) bool {
-	return reflect.DeepEqual(a, b)
+	comp := getComp()
+	it := getIt()
+	for i := getStart(); comp(i); i = it(i) {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 // IsEmpty checks whether this Uint256 is empty
 // returns: bool
 func (a *Uint256) IsEmpty() bool {
-	return a.Equal(Uint256{0, 0, 0, 0})
+	return a.Equal(EmptyUint256())
 }
 
 // LessThan checks if the given Uint256 is less than this Uint256
@@ -40,12 +46,14 @@ func (a *Uint256) LessThan(b Uint256) bool {
 	if b.IsEmpty() { //if it's empty, we don't care to compare
 		return false
 	}
-	for i, v := range a {
-		if v < b[i] {
+	comp := getComp()
+	it := getIt()
+	for i := getStart(); comp(i); i = it(i) {
+		if a[i] < b[i] {
 			return true
-		} else if v > b[i] {
+		} else if a[i] > b[i] {
 			return false
-		}
+		} // continue to a less significant digit if they are equal
 	}
 	return false
 }
@@ -65,8 +73,10 @@ func (a *Uint256) GreaterThan(b Uint256) bool {
 func (a *Uint256) Xor(b Uint256) Uint256 {
 	var output Uint256
 	output = Uint256{}
-	for i, bv := range b {
-		output[i] = a[i] ^ bv
+	comp := getComp()
+	it := getIt()
+	for i := getStart(); comp(i); i = it(i) {
+		output[i] = a[i] ^ b[i]
 	}
 	return output
 }
@@ -75,7 +85,9 @@ func (a *Uint256) Xor(b Uint256) Uint256 {
 // returns: []byte
 func (a *Uint256) ToBytes() []byte {
 	out := []byte{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
-	for i := 0; i < LENGTH; i++ {
+	comp := getComp()
+	it := getIt()
+	for i := getStart(); comp(i); i = it(i) {
 		intdian.ByteOrder().PutUint64(out[i*STEP_SIZE:], a[i])
 	}
 	return out
@@ -104,4 +116,23 @@ func FromBytes(data []byte) Uint256 {
 // returns: Uint256
 func EmptyUint256() Uint256 {
 	return Uint256{0, 0, 0, 0}
+}
+
+// New returns a Uint256 with ordered most to least significant digits as params
+// params:
+//     num: ...uint64 most-to-least significant digit
+// returns: Uint256
+func New(num ...uint64) Uint256 {
+	if len(num) > LENGTH {
+		log.Fatalf("Wrong number of arguments given. Expected <=%d, got %d", LENGTH, len(num))
+	}
+	comp := getComp()
+	it := getIt()
+	v := EmptyUint256()
+
+	// https://imgur.com/gallery/0QmLNmx
+	for i, k := skipBy(it, getStart(), LENGTH-len(num)), 0; comp(i) && k < LENGTH; i, k = it(i), k+1 {
+		v[i] = num[k]
+	}
+	return v
 }

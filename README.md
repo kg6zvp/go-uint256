@@ -1,5 +1,7 @@
 # Uint256
 
+[![Build Status](https://travis-ci.com/kg6zvp/go-uint256.svg?branch=master)](https://travis-ci.com/kg6zvp/go-uint256)
+
 Unsigned 256-bit integer library for all your cryptographic needs
 
 ## Example
