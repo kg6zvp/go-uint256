@@ -1,0 +1,7 @@
+# Set indentation to Tabs for all file types
+root = true
+
+[*]
+indent_style = tab
+trim_trailing_whitespace = true
+spaces_around_operators = true
