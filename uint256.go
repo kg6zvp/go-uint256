@@ -29,7 +29,7 @@ func (a *Uint256) Equal(b Uint256) bool {
 // IsEmpty checks whether this Uint256 is empty
 // returns: bool
 func (a *Uint256) IsEmpty() bool {
-	return reflect.DeepEqual(a, Uint256{0, 0, 0, 0})
+	return a.Equal(Uint256{0, 0, 0, 0})
 }
 
 // LessThan checks if the given Uint256 is less than this Uint256
