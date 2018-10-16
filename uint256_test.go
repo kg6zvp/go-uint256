@@ -37,3 +37,29 @@ func TestToBytes(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func BenchmarkFromBytes(b *testing.B) {
+
+	testBytes := []byte{0, 0, 0, 0, 0, 0, 0, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 6, 0, 0, 0, 0, 0, 2, 0, 8}
+
+	for n := 0; n < b.N; n++ {
+		FromBytes(testBytes)
+	}
+}
+
+func BenchmarkToBytes(b *testing.B) {
+
+	//Init byte array before the benchmark
+	var testBytes = make([]byte, 32)
+
+	var v Uint256
+
+	for n := 0; n < b.N; n++ {
+		//Write to a variable to avoid inlining
+		testBytes = v.ToBytes()
+	}
+
+	//Discard the value
+	_ = testBytes
+
+}
