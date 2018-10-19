@@ -4,6 +4,7 @@ import (
 	"github.com/kg6zvp/go-intdian"
 )
 
+// most to least significant
 func getStart() int {
 	if intdian.Big_Endian {
 		return 0
@@ -12,10 +13,20 @@ func getStart() int {
 	}
 }
 
+// least to most significant
+func getRevStart() int {
+	if intdian.Big_Endian {
+		return LENGTH - 1
+	} else {
+		return 0
+	}
+}
+
 type cond func(i int) bool
 
 type iter func(i int) int
 
+// most to least significant
 func getComp() cond {
 	if intdian.Big_Endian {
 		return func(i int) bool {
@@ -28,6 +39,20 @@ func getComp() cond {
 	}
 }
 
+// least to most significant
+func getRevComp() cond {
+	if intdian.Big_Endian {
+		return func(i int) bool {
+			return i >= 0
+		}
+	} else { // little endian
+		return func(i int) bool {
+			return i < LENGTH
+		}
+	}
+}
+
+// most to least significant
 func getIt() iter {
 	if intdian.Big_Endian {
 		return func(i int) int {
@@ -36,6 +61,19 @@ func getIt() iter {
 	} else { // little endian
 		return func(i int) int {
 			return i - 1
+		}
+	}
+}
+
+// least to most significant
+func getRevIt() iter {
+	if intdian.Big_Endian {
+		return func(i int) int {
+			return i - 1
+		}
+	} else { // little endian
+		return func(i int) int {
+			return i + 1
 		}
 	}
 }
