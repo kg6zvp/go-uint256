@@ -17,6 +17,8 @@ const BYTE_LENGTH = STEP_SIZE * LENGTH
 
 type Uint256 [LENGTH]uint64
 
+// Comparitors
+
 // Equal checks equality between this Uint256 and another one
 // params:
 //     b: Uint256 to compare against
@@ -66,7 +68,9 @@ func (a *Uint256) GreaterThan(b Uint256) bool {
 	return !a.Equal(b) && !a.LessThan(b)
 }
 
-// Xor calculates the xor of two Uint256's
+// Operations
+
+// Xor calculates the xor of two Uint256's (no side-effects)
 // params:
 //     b: Uint256 to compare against
 // returns: Uint256 representing the difference
@@ -80,6 +84,8 @@ func (a *Uint256) Xor(b Uint256) Uint256 {
 	}
 	return output
 }
+
+// Conversions
 
 // ToBytes converts this Uint256 into a []byte
 // returns: []byte
@@ -111,6 +117,8 @@ func FromBytes(data []byte) Uint256 {
 		intdian.ByteOrder().Uint64(data[24:32]),
 	}
 }
+
+// Constructors
 
 // EmptyUint256 returns an empty Uint256
 // returns: Uint256
