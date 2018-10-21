@@ -85,6 +85,34 @@ func (a *Uint256) Xor(b Uint256) Uint256 {
 	return output
 }
 
+// Add calculates the result of adding the given to this Uint256 (no side-effects)
+// params:
+//     b: Uint256 to add
+// returns: Uint256 representing the result, bool (true for no overflow, false for overflow)
+func (a *Uint256) Add(b Uint256) Uint256 {
+	var output Uint256
+	output = Uint256{}
+	comp := getRevComp()
+	it := getRevIt()
+	overflow := false
+	for i := getRevStart(); comp(i); i = it(i) { //iterate from least to most significant digits
+		output[i], overflow = addOverflow(overflow, a[i], b[i])
+	}
+	return output
+}
+
+func addOverflow(overflow bool, a uint64, b uint64) (uint64, bool) {
+	output := a + b
+	ret_overflow := false
+	if output < a || output < b {
+		ret_overflow = true
+	}
+	if overflow { // if there is overflow
+		output++
+	}
+	return output, ret_overflow
+}
+
 // Conversions
 
 // ToBytes converts this Uint256 into a []byte

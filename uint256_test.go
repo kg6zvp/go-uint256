@@ -1,6 +1,7 @@
 package uint256
 
 import (
+	"math"
 	"reflect"
 	"testing"
 
@@ -96,5 +97,36 @@ func TestConstructor(t *testing.T) {
 		if !reflect.DeepEqual(v, Uint256{67, 83, 96, 8196}) {
 			t.Fatalf("little endian expected: {67, 83, 96, 8196}, actual: {%d, %d, %d, %d}", v[0], v[1], v[2], v[3])
 		}
+	}
+}
+
+func TestAddOverflow(t *testing.T) {
+	a := New(math.MaxUint64)
+	b := New(math.MaxUint64)
+
+	c := a.Add(b)
+
+	LAST_DIGIT := 0
+	SECOND_TO_LAST_DIGIT := 1
+	SECOND_DIGIT := 2
+	FIRST_DIGIT := 3
+	if intdian.Big_Endian {
+		LAST_DIGIT = 3
+		SECOND_TO_LAST_DIGIT = 2
+		SECOND_DIGIT = 1
+		FIRST_DIGIT = 0
+	}
+
+	if c[FIRST_DIGIT] != 0 {
+		t.Fatalf("First digit should have been 0, was %d", c[FIRST_DIGIT])
+	}
+	if c[SECOND_DIGIT] != 0 {
+		t.Fatalf("Second digit should have been 0, was %d", c[SECOND_DIGIT])
+	}
+	if c[SECOND_TO_LAST_DIGIT] != 1 {
+		t.Fatalf("Error: overflow not correctly processed. Second-to-last digit != 1, equals %d", c[SECOND_TO_LAST_DIGIT])
+	}
+	if c[LAST_DIGIT] != math.MaxUint64-uint64(1) {
+		t.Fatalf("Error: addition not correctly performed. Should equal %d, equals %d", math.MaxUint64-uint64(1), c[LAST_DIGIT])
 	}
 }
