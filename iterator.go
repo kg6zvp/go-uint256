@@ -7,9 +7,8 @@ import (
 func getStart() int {
 	if intdian.Big_Endian {
 		return 0
-	} else {
-		return LENGTH - 1
 	}
+	return LENGTH - 1
 }
 
 type cond func(i int) bool
@@ -21,10 +20,10 @@ func getComp() cond {
 		return func(i int) bool {
 			return i < LENGTH
 		}
-	} else { // little endian
-		return func(i int) bool {
-			return i >= 0
-		}
+	}
+	// little endian
+	return func(i int) bool {
+		return i >= 0
 	}
 }
 
@@ -33,10 +32,9 @@ func getIt() iter {
 		return func(i int) int {
 			return i + 1
 		}
-	} else { // little endian
-		return func(i int) int {
-			return i - 1
-		}
+	} // little endian
+	return func(i int) int {
+		return i - 1
 	}
 }
 
