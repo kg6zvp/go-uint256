@@ -29,7 +29,7 @@ func TestEmptyUint256(t *testing.T) {
 }
 
 func TestToBytes(t *testing.T) {
-	v := New(845)
+	v, _ := New(845)
 	bs := v.ToBytes()
 	if intdian.Big_Endian {
 		if bs[30] != 3 {
@@ -49,12 +49,12 @@ func TestToBytes(t *testing.T) {
 }
 
 func TestConstructor(t *testing.T) {
-	v := New()
+	v, _ := New()
 	if !v.IsEmpty() {
 		t.Fatalf("New() without args should be 0/empty, was {%d, %d, %d, %d}", v[0], v[1], v[2], v[3])
 	}
 
-	v = New(20)
+	v, _ = New(20)
 	if intdian.Big_Endian {
 		if !reflect.DeepEqual(v, Uint256{0, 0, 0, 20}) {
 			t.Fatalf("big endian expected: {0, 0, 0, 20}, actual: {%d, %d, %d, %d}", v[0], v[1], v[2], v[3])
@@ -65,7 +65,7 @@ func TestConstructor(t *testing.T) {
 		}
 	}
 
-	v = New(255, 36)
+	v, _ = New(255, 36)
 	if intdian.Big_Endian {
 		if !reflect.DeepEqual(v, Uint256{0, 0, 255, 36}) {
 			t.Fatalf("big endian expected: {0, 0, 255, 36}, actual: {%d, %d, %d, %d}", v[0], v[1], v[2], v[3])
@@ -76,7 +76,7 @@ func TestConstructor(t *testing.T) {
 		}
 	}
 
-	v = New(96, 83, 67)
+	v, _ = New(96, 83, 67)
 	if intdian.Big_Endian {
 		if !reflect.DeepEqual(v, Uint256{0, 96, 83, 67}) {
 			t.Fatalf("big endian expected: {0, 96, 83, 67}, actual: {%d, %d, %d, %d}", v[0], v[1], v[2], v[3])
@@ -87,7 +87,7 @@ func TestConstructor(t *testing.T) {
 		}
 	}
 
-	v = New(8196, 96, 83, 67)
+	v, _ = New(8196, 96, 83, 67)
 	if intdian.Big_Endian {
 		if !reflect.DeepEqual(v, Uint256{8196, 96, 83, 67}) {
 			t.Fatalf("big endian expected: {8196, 96, 83, 67}, actual: {%d, %d, %d, %d}", v[0], v[1], v[2], v[3])
@@ -97,4 +97,21 @@ func TestConstructor(t *testing.T) {
 			t.Fatalf("little endian expected: {67, 83, 96, 8196}, actual: {%d, %d, %d, %d}", v[0], v[1], v[2], v[3])
 		}
 	}
+}
+
+func TestInvalidLength(t *testing.T) {
+	_, err := New(23, 45, 23, 43, 23)
+	if err.Error() != "Wrong number of arguments given. Expected <=4, got 5" {
+		t.Fatal("New expected to return an error on invalid arguments length")
+	}
+}
+
+func TestPanic(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("NewUnsafe() must panic when receiving the incorrect input")
+		}
+	}()
+
+	NewUnsafe(12, 70, 23, 90, 0)
 }

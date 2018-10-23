@@ -1,6 +1,7 @@
 package uint256
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/kg6zvp/go-intdian"
@@ -130,9 +131,9 @@ func EmptyUint256() Uint256 {
 // params:
 //     num: ...uint64 most-to-least significant digit
 // returns: Uint256
-func New(num ...uint64) Uint256 {
+func New(num ...uint64) (Uint256, error) {
 	if len(num) > LENGTH {
-		log.Fatalf("Wrong number of arguments given. Expected <=%d, got %d", LENGTH, len(num))
+		return Uint256{}, fmt.Errorf("Wrong number of arguments given. Expected <=%d, got %d", LENGTH, len(num))
 	}
 	comp := getComp()
 	it := getIt()
@@ -141,6 +142,15 @@ func New(num ...uint64) Uint256 {
 	// https://imgur.com/gallery/0QmLNmx
 	for i, k := skipBy(it, getStart(), LENGTH-len(num)), 0; comp(i) && k < LENGTH; i, k = it(i), k+1 {
 		v[i] = num[k]
+	}
+	return v, nil
+}
+
+// NewUnsafe will return an Uint256 or panic if the input is invalid
+func NewUnsafe(num ...uint64) Uint256 {
+	v, err := New(num...)
+	if err != nil {
+		panic(err)
 	}
 	return v
 }
