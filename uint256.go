@@ -145,3 +145,12 @@ func New(num ...uint64) (Uint256, error) {
 	}
 	return v, nil
 }
+
+// NewUnsafe will return an Uint256 or panic if the input is invalid
+func NewUnsafe(num ...uint64) Uint256 {
+	v, err := New(num...)
+	if err != nil {
+		panic(err)
+	}
+	return v
+}

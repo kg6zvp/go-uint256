@@ -105,3 +105,13 @@ func TestInvalidLength(t *testing.T) {
 		t.Fatal("New expected to return an error on invalid arguments length")
 	}
 }
+
+func TestPanic(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Errorf("NewUnsafe() must panic when receiving the incorrect input")
+		}
+	}()
+
+	NewUnsafe(12, 70, 23, 90, 0)
+}
